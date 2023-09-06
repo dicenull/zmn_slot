@@ -9,14 +9,39 @@
 
 import 'package:flutter/widgets.dart';
 
-class Assets {
-  Assets._();
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
 
-  static const String zundamonAtari = 'assets/zundamon_atari.wav';
-  static const String zundamonMon = 'assets/zundamon_mon.wav';
-  static const String zundamonNanoda = 'assets/zundamon_nanoda.wav';
-  static const String zundamonReach = 'assets/zundamon_reach.wav';
-  static const String zundamonZunda = 'assets/zundamon_zunda.wav';
+  /// File path: assets/images/mon.png
+  AssetGenImage get mon => const AssetGenImage('assets/images/mon.png');
+
+  /// File path: assets/images/nanoda.png
+  AssetGenImage get nanoda => const AssetGenImage('assets/images/nanoda.png');
+
+  /// File path: assets/images/zunda.png
+  AssetGenImage get zunda => const AssetGenImage('assets/images/zunda.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [mon, nanoda, zunda];
+}
+
+class $AssetsSoundsGen {
+  const $AssetsSoundsGen();
+
+  /// File path: assets/sounds/zundamon_atari.wav
+  String get zundamonAtari => 'assets/sounds/zundamon_atari.wav';
+
+  /// File path: assets/sounds/zundamon_mon.wav
+  String get zundamonMon => 'assets/sounds/zundamon_mon.wav';
+
+  /// File path: assets/sounds/zundamon_nanoda.wav
+  String get zundamonNanoda => 'assets/sounds/zundamon_nanoda.wav';
+
+  /// File path: assets/sounds/zundamon_reach.wav
+  String get zundamonReach => 'assets/sounds/zundamon_reach.wav';
+
+  /// File path: assets/sounds/zundamon_zunda.wav
+  String get zundamonZunda => 'assets/sounds/zundamon_zunda.wav';
 
   /// List of all assets
   List<String> get values => [
@@ -26,6 +51,13 @@ class Assets {
         zundamonReach,
         zundamonZunda
       ];
+}
+
+class Assets {
+  Assets._();
+
+  static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsSoundsGen sounds = $AssetsSoundsGen();
 }
 
 class AssetGenImage {
