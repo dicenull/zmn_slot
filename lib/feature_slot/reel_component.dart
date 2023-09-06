@@ -14,6 +14,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   // state
   bool isRoll = false;
+  final speed = 800;
 
   bool onCheckStopCurrent = false;
   _SuberiState? _suberiState;
@@ -75,7 +76,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   @override
   void update(double dt) {
-    final amount = 800 * dt;
+    final amount = speed * dt;
 
     if (isRoll) {
       reelPosition += amount;
@@ -125,7 +126,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     isRoll = false;
     _suberiState = null;
     stopIndex = index;
-    reelPosition = (reelPosition / 64).ceil() * gameRef.symbolSize;
+    reelPosition = (reelPosition / symbolSize).ceil() * symbolSize;
 
     final sfx = switch (visibleSymbol()) {
       null => '',

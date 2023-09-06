@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_core.dart';
+import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
 class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
@@ -65,7 +67,16 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
         if (table.every((symbols) => symbols != null)) {
           // 同じ絵柄で揃った
           if (matchAll(table[0], table[1], table[2])) {
-            gameRef.addPoint();
+            gameRef.addPoint(10);
+          }
+
+          if (table[0] == SlotSymbol.zunda &&
+              table[1] == SlotSymbol.mon &&
+              table[2] == SlotSymbol.nanoda) {
+            Future.delayed(const Duration(milliseconds: 1000), () {
+              FlameAudio.play('zundamon_atari.wav');
+            });
+            gameRef.addPoint(100);
           }
 
           inBet = false;

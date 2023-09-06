@@ -51,8 +51,8 @@ class SlotGame extends FlameGame
 
   int _index = 0;
 
-  void addPoint() {
-    _point += 10;
+  void addPoint(int value) {
+    _point += value;
   }
 
   @override
@@ -89,8 +89,12 @@ class SlotGame extends FlameGame
   @override
   Future<void> onLoad() async {
     await Flame.images.loadAll(['zunda.png', 'mon.png', 'nanoda.png']);
-    await FlameAudio.audioCache.loadAll(
-        ['zundamon_zun.wav', 'zundamon_mon.wav', 'zundamon_nanoda.wav']);
+    await FlameAudio.audioCache.loadAll([
+      'zundamon_zun.wav',
+      'zundamon_mon.wav',
+      'zundamon_nanoda.wav',
+      'zundamon_atari.wav'
+    ]);
 
     slot = SlotComponent([
       ReelComponent(leftReel, symbolSize),
