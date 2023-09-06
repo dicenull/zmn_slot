@@ -14,8 +14,8 @@ class HomePage extends HookConsumerWidget {
       ),
       body: Center(
         child: SizedBox(
-          width: 600,
-          height: 600,
+          width: 300,
+          height: 300,
           child: GameWidget(
             game: SlotGame(),
           ),

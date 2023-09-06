@@ -55,7 +55,6 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
         final table = reels.map((reel) => reel.visibleSymbols()).toList();
 
         if (table.every((symbols) => symbols.isNotEmpty)) {
-          print("${table[0][1]}, ${table[1][1]} ${table[2][1]}");
           // 同じ絵柄で揃った
           if (matchAll(
             table[0][1],

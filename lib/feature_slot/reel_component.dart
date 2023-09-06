@@ -9,7 +9,7 @@ import 'package:flame/palette.dart';
 
 class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   final List<SlotSymbol> _symbols;
-  final double reelLength;
+  final double reelHeight;
   final double symbolSize;
   final List<_SymbolState> _reel;
 
@@ -22,7 +22,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   int stopIndex = -1;
   ReelComponent(this._symbols, this.symbolSize)
       : _reel = <_SymbolState>[],
-        reelLength = symbolSize * _symbols.length {
+        reelHeight = symbolSize * _symbols.length {
     _symbols.asMap().forEach((y, symbol) {
       final image = switch (symbol) {
         SlotSymbol.zunda => Flame.images.fromCache('zunda.png'),
@@ -37,10 +37,9 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     });
   }
 
-  Vector2 get slotCenter =>
-      Vector2(0, gameRef.canvasSize.y * .5 - symbolSize * .5);
+  Vector2 get slotCenter => Vector2(0, reelHeight * .5);
 
-  double calcHeight(int y) => (y * symbolSize + reelPosition) % reelLength;
+  double calcHeight(int y) => (y * symbolSize + reelPosition) % reelHeight;
 
   @override
   FutureOr<void> onLoad() {
@@ -50,12 +49,12 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   @override
   void render(Canvas canvas) {
     final reelRange = Rect.fromCenter(
-      center: Offset(symbolSize * .5, gameRef.canvasSize.y / 2) +
+      center: Offset(symbolSize, reelHeight + symbolSize) * .5 +
           position.toOffset(),
       width: symbolSize,
-      height: symbolSize * 10,
+      height: symbolSize * 1.5,
     );
-    const bgColor = BasicPalette.white;
+    final bgColor = BasicPalette.white.withAlpha(50);
 
     canvas.clipRect(reelRange);
     canvas.drawRect(reelRange, bgColor.paint());
@@ -82,11 +81,11 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   @override
   void update(double dt) {
-    final amount = 100 * dt;
+    final amount = 800 * dt;
 
     if (isRoll) {
       reelPosition += amount;
-      reelPosition %= reelLength;
+      reelPosition %= reelHeight;
 
       if (onCheckStopCurrent) {
         _stopCurrent();
@@ -100,7 +99,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
           isRoll = false;
           _suberiState = null;
           stopIndex = index;
-          print("$index $reelPosition, ${reelPosition / 64}");
+          reelPosition = (reelPosition / 64).ceil() * gameRef.symbolSize;
         }
       }
     }
