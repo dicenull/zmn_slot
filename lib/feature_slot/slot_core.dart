@@ -17,9 +17,6 @@ class SlotGame extends FlameGame
     SlotSymbol.zunda,
     SlotSymbol.mon,
     SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
   ];
 
   static const List<SlotSymbol> centerReel = [
@@ -29,15 +26,9 @@ class SlotGame extends FlameGame
     SlotSymbol.mon,
     SlotSymbol.nanoda,
     SlotSymbol.zunda,
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
   ];
 
   static const List<SlotSymbol> rightReel = [
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
     SlotSymbol.nanoda,
     SlotSymbol.zunda,
     SlotSymbol.mon,

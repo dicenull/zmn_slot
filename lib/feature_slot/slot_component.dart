@@ -17,6 +17,15 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   @override
   FutureOr<void> onLoad() {
     addAll(reels);
+
+    reels.asMap().forEach((x, reel) {
+      // なぜか[symbolSize]の半分だけズレるので調整している
+      final padding = (x - 1) * gameRef.symbolSize * .5;
+
+      reel.position = Vector2(padding, 0);
+    });
+
+    position = Vector2(gameRef.canvasSize.x * .5 - gameRef.symbolSize * .5, 0);
   }
 
   void roll() {
@@ -41,19 +50,12 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   @override
   void update(double dt) {
-    reels.asMap().forEach((x, reel) {
-      final leftCenterPos = (gameRef.canvasSize.x / 2) -
-          (reels.length - 1) * .5 * gameRef.symbolSize;
-      final padding = (x - 1) * gameRef.symbolSize;
-
-      reel.position = Vector2(leftCenterPos + padding, 15);
-    });
-
     if (inBet) {
       if (reels.every((reel) => !reel.isRoll)) {
         final table = reels.map((reel) => reel.visibleSymbols()).toList();
 
         if (table.every((symbols) => symbols.isNotEmpty)) {
+          print("${table[0][1]}, ${table[1][1]} ${table[2][1]}");
           // 同じ絵柄で揃った
           if (matchAll(
             table[0][1],

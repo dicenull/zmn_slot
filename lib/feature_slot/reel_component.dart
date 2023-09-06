@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:app/feature_slot/slot_core.dart';
@@ -36,36 +37,28 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     });
   }
 
-  Vector2 get slotCenter => Vector2(0, gameRef.canvasSize.y / 2 - symbolSize);
+  Vector2 get slotCenter =>
+      Vector2(0, gameRef.canvasSize.y * .5 - symbolSize * .5);
 
   double calcHeight(int y) => (y * symbolSize + reelPosition) % reelLength;
 
   @override
+  FutureOr<void> onLoad() {
+    print(_calcCenterIndex());
+  }
+
+  @override
   void render(Canvas canvas) {
-    final center = Offset(gameRef.canvasSize.x / 2, gameRef.canvasSize.y / 2);
-
-    // canvas.clipRect(
-    //   Rect.fromCenter(
-    //     center:
-    //         Offset(symbolSize, gameRef.canvasSize.y / 2) + position.toOffset(),
-    //     width: symbolSize,
-    //     height: symbolSize * 3.5,
-    //   ),
-    // );
-
-    // background
-    final color = switch (_symbols.first) {
-      SlotSymbol.zunda => BasicPalette.blue.withAlpha(50),
-      SlotSymbol.mon => BasicPalette.red.withAlpha(50),
-      SlotSymbol.nanoda => BasicPalette.green.withAlpha(50),
-    };
-    canvas.drawRect(
-      Rect.fromCenter(
-          center: center,
-          width: gameRef.canvasSize.x,
-          height: gameRef.canvasSize.y),
-      color.paint(),
+    final reelRange = Rect.fromCenter(
+      center: Offset(symbolSize * .5, gameRef.canvasSize.y / 2) +
+          position.toOffset(),
+      width: symbolSize,
+      height: symbolSize * 10,
     );
+    const bgColor = BasicPalette.white;
+
+    canvas.clipRect(reelRange);
+    canvas.drawRect(reelRange, bgColor.paint());
 
     _reel.asMap().forEach((y, state) {
       final p = Vector2(0, calcHeight(y));
@@ -74,7 +67,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         canvas,
         size: Vector2(symbolSize, symbolSize),
         position: p + position,
-        anchor: Anchor.center,
+        anchor: Anchor.topLeft,
       );
     });
   }
@@ -89,7 +82,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   @override
   void update(double dt) {
-    final amount = 1200 * dt;
+    final amount = 100 * dt;
 
     if (isRoll) {
       reelPosition += amount;
@@ -107,6 +100,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
           isRoll = false;
           _suberiState = null;
           stopIndex = index;
+          print("$index $reelPosition, ${reelPosition / 64}");
         }
       }
     }
@@ -132,6 +126,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     int index = 0;
     var minDiff = gameRef.canvasSize.y;
 
+    // 最も画面の中心に近いシンボルを探す
     _reel.asMap().forEach((i, state) {
       final diff = slotCenter.y - calcHeight(i);
       if (diff > 0 && minDiff > diff) {
