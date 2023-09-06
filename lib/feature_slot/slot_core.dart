@@ -5,6 +5,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -68,17 +69,19 @@ class SlotGame extends FlameGame
     }
 
     final stopKeys = [
-      LogicalKeyboardKey.keyA,
-      LogicalKeyboardKey.keyS,
-      LogicalKeyboardKey.keyD
+      LogicalKeyboardKey.digit1,
+      LogicalKeyboardKey.digit2,
+      LogicalKeyboardKey.digit3
     ];
+    var press = false;
     for (var i = 0; i < slot.reels.length; i++) {
       final keyPressed = keysPressed.contains(stopKeys[i]);
       if (keyPressed && isKeyDown) {
         slot.stop(i);
-        return KeyEventResult.handled;
+        press = true;
       }
     }
+    if (press) return KeyEventResult.handled;
 
     return KeyEventResult.ignored;
   }
@@ -86,6 +89,8 @@ class SlotGame extends FlameGame
   @override
   Future<void> onLoad() async {
     await Flame.images.loadAll(['zunda.png', 'mon.png', 'nanoda.png']);
+    await FlameAudio.audioCache.loadAll(
+        ['zundamon_zun.wav', 'zundamon_mon.wav', 'zundamon_nanoda.wav']);
 
     slot = SlotComponent([
       ReelComponent(leftReel, symbolSize),

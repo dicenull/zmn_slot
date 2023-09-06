@@ -1,11 +1,10 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/palette.dart';
+import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/material.dart';
 
 class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   final List<SlotSymbol> _symbols;
@@ -40,11 +39,6 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   Vector2 get slotCenter => Vector2(0, reelHeight * .5);
 
   double calcHeight(int y) => (y * symbolSize + reelPosition) % reelHeight;
-
-  @override
-  FutureOr<void> onLoad() {
-    print(_calcCenterIndex());
-  }
 
   @override
   void render(Canvas canvas) {
@@ -96,10 +90,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
       final diff = slotCenter.y - calcHeight(index);
       if (diff.abs() < amount) {
         if (_suberiState?.symbol == _reel[index].symbol) {
-          isRoll = false;
-          _suberiState = null;
-          stopIndex = index;
-          reelPosition = (reelPosition / 64).ceil() * gameRef.symbolSize;
+          _onStop(index);
         }
       }
     }
@@ -107,18 +98,11 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     super.update(dt);
   }
 
-  List<SlotSymbol> visibleSymbols() {
-    if (stopIndex == -1) return [];
+  SlotSymbol? visibleSymbol() {
+    if (stopIndex == -1) return null;
 
-    final top = (_reel.length + stopIndex - 1) % _reel.length;
     final center = stopIndex;
-    final bottom = (stopIndex + 1) % _reel.length;
-
-    return [
-      _reel[top].symbol,
-      _reel[center].symbol,
-      _reel[bottom].symbol,
-    ];
+    return _reel[center].symbol;
   }
 
   int _calcCenterIndex() {
@@ -135,6 +119,21 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     });
 
     return index;
+  }
+
+  void _onStop(int index) {
+    isRoll = false;
+    _suberiState = null;
+    stopIndex = index;
+    reelPosition = (reelPosition / 64).ceil() * gameRef.symbolSize;
+
+    final sfx = switch (visibleSymbol()) {
+      null => '',
+      SlotSymbol.zunda => 'zundamon_zunda.wav',
+      SlotSymbol.mon => 'zundamon_mon.wav',
+      SlotSymbol.nanoda => 'zundamon_nanoda.wav',
+    };
+    if (sfx.isNotEmpty) FlameAudio.play(sfx);
   }
 
   void _stopCurrent() {

@@ -3,12 +3,20 @@ import 'dart:async';
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 
 class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   final List<ReelComponent> reels;
 
   // state
   bool inBet = false;
+
+  final textPaint = TextPaint(
+    style: const TextStyle(
+      fontSize: 30,
+      color: Colors.white,
+    ),
+  );
 
   SlotComponent(this.reels);
 
@@ -52,15 +60,11 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   void update(double dt) {
     if (inBet) {
       if (reels.every((reel) => !reel.isRoll)) {
-        final table = reels.map((reel) => reel.visibleSymbols()).toList();
+        final table = reels.map((reel) => reel.visibleSymbol()).toList();
 
-        if (table.every((symbols) => symbols.isNotEmpty)) {
+        if (table.every((symbols) => symbols != null)) {
           // 同じ絵柄で揃った
-          if (matchAll(
-            table[0][1],
-            table[1][1],
-            table[2][1],
-          )) {
+          if (matchAll(table[0], table[1], table[2])) {
             gameRef.addPoint();
           }
 

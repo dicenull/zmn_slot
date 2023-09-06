@@ -10,15 +10,27 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Title'),
+        title: const Text('ずんだもんスロット'),
       ),
       body: Center(
-        child: SizedBox(
-          width: 300,
-          height: 300,
-          child: GameWidget(
-            game: SlotGame(),
-          ),
+        child: Column(
+          children: [
+            SizedBox(
+              width: 300,
+              height: 300,
+              child: GameWidget(
+                game: SlotGame(),
+              ),
+            ),
+            const Text(
+              'スタート: スペースキー ドラッグ',
+              style: TextStyle(fontSize: 32),
+            ),
+            const Text(
+              'ストップ: 1,2,3キー タップ',
+              style: TextStyle(fontSize: 32),
+            ),
+          ],
         ),
       ),
     );

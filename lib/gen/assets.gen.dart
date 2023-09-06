@@ -9,6 +9,34 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsAudioGen {
+  const $AssetsAudioGen();
+
+  /// File path: assets/audio/zundamon_atari.wav
+  String get zundamonAtari => 'assets/audio/zundamon_atari.wav';
+
+  /// File path: assets/audio/zundamon_mon.wav
+  String get zundamonMon => 'assets/audio/zundamon_mon.wav';
+
+  /// File path: assets/audio/zundamon_nanoda.wav
+  String get zundamonNanoda => 'assets/audio/zundamon_nanoda.wav';
+
+  /// File path: assets/audio/zundamon_reach.wav
+  String get zundamonReach => 'assets/audio/zundamon_reach.wav';
+
+  /// File path: assets/audio/zundamon_zunda.wav
+  String get zundamonZunda => 'assets/audio/zundamon_zunda.wav';
+
+  /// List of all assets
+  List<String> get values => [
+        zundamonAtari,
+        zundamonMon,
+        zundamonNanoda,
+        zundamonReach,
+        zundamonZunda
+      ];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -25,39 +53,11 @@ class $AssetsImagesGen {
   List<AssetGenImage> get values => [mon, nanoda, zunda];
 }
 
-class $AssetsSoundsGen {
-  const $AssetsSoundsGen();
-
-  /// File path: assets/sounds/zundamon_atari.wav
-  String get zundamonAtari => 'assets/sounds/zundamon_atari.wav';
-
-  /// File path: assets/sounds/zundamon_mon.wav
-  String get zundamonMon => 'assets/sounds/zundamon_mon.wav';
-
-  /// File path: assets/sounds/zundamon_nanoda.wav
-  String get zundamonNanoda => 'assets/sounds/zundamon_nanoda.wav';
-
-  /// File path: assets/sounds/zundamon_reach.wav
-  String get zundamonReach => 'assets/sounds/zundamon_reach.wav';
-
-  /// File path: assets/sounds/zundamon_zunda.wav
-  String get zundamonZunda => 'assets/sounds/zundamon_zunda.wav';
-
-  /// List of all assets
-  List<String> get values => [
-        zundamonAtari,
-        zundamonMon,
-        zundamonNanoda,
-        zundamonReach,
-        zundamonZunda
-      ];
-}
-
 class Assets {
   Assets._();
 
+  static const $AssetsAudioGen audio = $AssetsAudioGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
-  static const $AssetsSoundsGen sounds = $AssetsSoundsGen();
 }
 
 class AssetGenImage {
