@@ -39123,8 +39123,7 @@ s=4
 return A.V(q.td(m),$async$iG)
 case 4:return A.Q(null,r)}})
 return A.R($async$iG,r)},
-aeZ(){var s=this.a2-=3
-if(s<0){this.a2=0
+aeZ(){if(--this.a2<0){this.a2=0
 return!1}return!0},
 jD(a){var s=B.f.k(this.a2),r=new A.bn(new Float64Array(2))
 r.dv(0,0)
