@@ -118,7 +118,7 @@ class SlotGame extends FlameGame
   }
 
   bool playSlot() {
-    _point -= 3;
+    _point -= 1;
     if (_point < 0) {
       _point = 0;
       return false;
