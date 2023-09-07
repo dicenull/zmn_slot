@@ -47,6 +47,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
       return;
     }
 
+    rollStream.add(SlotEvent.roll);
     for (var reel in reels) {
       // どこに止まるかを確定させる
       final index = math.Random().nextInt(reel.length);
@@ -71,6 +72,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
           // 同じ絵柄で揃った
           if (matchAll(table[0], table[1], table[2])) {
             gameRef.addPoint(10);
+            rollStream.add(SlotEvent.smallBonus);
           }
 
           if (table[0] == SlotSymbol.zunda &&
@@ -80,6 +82,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
               FlameAudio.play('zundamon_atari.wav');
             });
             gameRef.addPoint(100);
+            rollStream.add(SlotEvent.bigBonus);
           }
 
           inBet = false;

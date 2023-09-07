@@ -5,4 +5,5 @@
 
 ## クレジット
 
-VOICEVOX:ずんだもん
+- VOICEVOX:ずんだもん
+- ずんだもん立ち絵素材 https://seiga.nicovideo.jp/seiga/im10788496

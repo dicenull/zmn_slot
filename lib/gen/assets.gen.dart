@@ -49,8 +49,48 @@ class $AssetsImagesGen {
   /// File path: assets/images/zunda.png
   AssetGenImage get zunda => const AssetGenImage('assets/images/zunda.png');
 
+  $AssetsImagesZundamonGen get zundamon => const $AssetsImagesZundamonGen();
+
   /// List of all assets
   List<AssetGenImage> get values => [mon, nanoda, zunda];
+}
+
+class $AssetsImagesZundamonGen {
+  const $AssetsImagesZundamonGen();
+
+  /// File path: assets/images/zundamon/zundamon0001.png
+  AssetGenImage get zundamon0001 =>
+      const AssetGenImage('assets/images/zundamon/zundamon0001.png');
+
+  /// File path: assets/images/zundamon/zundamon0002.png
+  AssetGenImage get zundamon0002 =>
+      const AssetGenImage('assets/images/zundamon/zundamon0002.png');
+
+  /// File path: assets/images/zundamon/zundamon0003.png
+  AssetGenImage get zundamon0003 =>
+      const AssetGenImage('assets/images/zundamon/zundamon0003.png');
+
+  /// File path: assets/images/zundamon/zundamon0004.png
+  AssetGenImage get zundamon0004 =>
+      const AssetGenImage('assets/images/zundamon/zundamon0004.png');
+
+  /// File path: assets/images/zundamon/zundamon0005.png
+  AssetGenImage get zundamon0005 =>
+      const AssetGenImage('assets/images/zundamon/zundamon0005.png');
+
+  /// File path: assets/images/zundamon/zundamon0006.png
+  AssetGenImage get zundamon0006 =>
+      const AssetGenImage('assets/images/zundamon/zundamon0006.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+        zundamon0001,
+        zundamon0002,
+        zundamon0003,
+        zundamon0004,
+        zundamon0005,
+        zundamon0006
+      ];
 }
 
 class Assets {

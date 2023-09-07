@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_component.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
@@ -8,6 +10,14 @@ import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+final rollStream = StreamController<SlotEvent>.broadcast();
+
+enum SlotEvent {
+  roll,
+  smallBonus,
+  bigBonus,
+}
 
 class SlotGame extends FlameGame
     with VerticalDragDetector, TapDetector, KeyboardEvents {
