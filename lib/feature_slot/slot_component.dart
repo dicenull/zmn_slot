@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_core.dart';
@@ -47,7 +48,9 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     }
 
     for (var reel in reels) {
-      reel.roll();
+      // どこに止まるかを確定させる
+      final index = math.Random().nextInt(reel.length);
+      reel.roll(index);
     }
     inBet = true;
   }

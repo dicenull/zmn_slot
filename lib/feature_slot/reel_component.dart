@@ -14,12 +14,14 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   // state
   bool isRoll = false;
+  int stopIndex = -1;
   final speed = 800;
+
+  int get length => _symbols.length;
 
   bool onCheckStopCurrent = false;
   _SuberiState? _suberiState;
   double reelPosition = 0;
-  int stopIndex = -1;
   ReelComponent(this._symbols, this.symbolSize)
       : _reel = <_SymbolState>[],
         reelHeight = symbolSize * _symbols.length {
@@ -66,7 +68,8 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     });
   }
 
-  void roll() {
+  void roll(int index) {
+    stopIndex = index;
     isRoll = true;
   }
 
@@ -140,9 +143,9 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   void _stopCurrent() {
     if (!isRoll) return;
 
-    final index = _calcCenterIndex();
-    var symbol = _reel[index].symbol;
+    var symbol = _reel[stopIndex].symbol;
     _suberiState = _SuberiState(symbol, 1);
+    print(_suberiState?.symbol.toString());
   }
 }
 
