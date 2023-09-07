@@ -1,11 +1,11 @@
 {
-    "name": "flutter_template",
-    "short_name": "flutter_template",
+    "name": "ずんだもんスロット",
+    "short_name": "zmn_slot",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "ずんだ もん なのだを揃えるスロットなのだ。",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
