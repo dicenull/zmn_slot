@@ -90,11 +90,10 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         onCheckStopCurrent = false;
       }
 
-      final index = _calcCenterIndex();
-      final diff = slotCenter.y - calcHeight(index);
+      final diff = slotCenter.y - calcHeight(stopIndex);
       if (diff.abs() < amount) {
-        if (_suberiState?.symbol == _reel[index].symbol) {
-          _onStop(index);
+        if (_suberiState?.symbol == _reel[stopIndex].symbol) {
+          _onStop();
         }
       }
     }
@@ -125,10 +124,9 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     return index;
   }
 
-  void _onStop(int index) {
+  void _onStop() {
     isRoll = false;
     _suberiState = null;
-    stopIndex = index;
     reelPosition = (reelPosition / symbolSize).ceil() * symbolSize;
 
     final sfx = switch (visibleSymbol()) {
@@ -145,7 +143,6 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
     var symbol = _reel[stopIndex].symbol;
     _suberiState = _SuberiState(symbol, 1);
-    print(_suberiState?.symbol.toString());
   }
 }
 
