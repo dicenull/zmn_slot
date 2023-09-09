@@ -37,9 +37,9 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         SlotSymbol.watermelon =>
           Flame.images.fromCache('watermelon_zundamochi.png'),
         SlotSymbol.cherry => Flame.images.fromCache('cherry_edamame.png'),
-        SlotSymbol.replay => Flame.images.fromCache('replay_edamame.png'),
-        // TODO: Handle this case.
+        SlotSymbol.replay => Flame.images.fromCache('replay_zundamon.png'),
         SlotSymbol.bell => Flame.images.fromCache('bell_ahiru.png'),
+        SlotSymbol.plum => Flame.images.fromCache('plum_edamame.png'),
       };
 
       _reel.add(_SymbolState(
@@ -88,17 +88,24 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
       if (isDebug) {
         textPaint.render(canvas, y.toString(), p);
+        canvas.drawRect(
+            Rect.fromPoints(p.toOffset(), Offset(symbolSize, symbolSize)),
+            BasicPalette.green.paint()..style = PaintingStyle.stroke);
       }
     });
 
     if (isDebug) {
       canvas.drawCircle(reelCenter.toOffset(), 5, bgColor.paint());
+
+      final centerIndex = _calcCenterIndex();
+      final symbolCenterHeight = calcDrawHeight(centerIndex) + symbolSize * .5;
+
+      canvas.drawCircle(Offset(0, symbolCenterHeight), 10, bgColor.paint());
     }
   }
 
   void roll(int index) {
     stopIndex = index;
-    print('${_reel[stopIndex].symbol} at $stopIndex');
     isRoll = true;
   }
 
@@ -121,7 +128,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         final diff = reelCenter.y - symbolCenterHeight;
         if (diff.abs() < amount) {
           if (_suberiSymbol == _reel[centerIndex].symbol) {
-            _onStop();
+            _onStop(centerIndex);
           }
         }
       }
@@ -130,11 +137,20 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     super.update(dt);
   }
 
-  SlotSymbol? visibleSymbol() {
+  List<SlotSymbol>? visibleSymbols() {
     if (stopIndex == -1) return null;
 
+    final len = _reel.length;
+
+    final top = (len + stopIndex - 1) % len;
     final center = stopIndex;
-    return _reel[center].symbol;
+    final bottom = (stopIndex + 1) % len;
+
+    return [
+      _reel[top].symbol,
+      _reel[center].symbol,
+      _reel[bottom].symbol,
+    ];
   }
 
   int _calcCenterIndex() {
@@ -153,13 +169,14 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     return index;
   }
 
-  void _onStop() {
+  void _onStop(int realStopIndex) {
     isRoll = false;
     isStopReady = false;
+    stopIndex = realStopIndex;
 
-    reelPosition = (reelPosition / symbolSize).ceil() * symbolSize;
+    reelPosition = (_reel.length / 2 + 1 - realStopIndex) * symbolSize;
 
-    final sfx = switch (visibleSymbol()) {
+    final sfx = switch (visibleSymbols()?[1]) {
       SlotSymbol.zu => 'zundamon_zunda.wav',
       SlotSymbol.nn => 'zundamon_mon.wav',
       SlotSymbol.da => 'zundamon_nanoda.wav',

@@ -34,8 +34,17 @@ class SlotGame extends FlameGame
 
   int _index = 0;
 
-  void addPoint(int value) {
-    _point += value;
+  void addPoint(SlotSymbol? symbol) {
+    final winPoint = switch (symbol) {
+      null => 0,
+      _ => symbol.point,
+    };
+
+    _point += winPoint;
+  }
+
+  void addZundaPoint() {
+    _point += 100;
   }
 
   @override
@@ -78,8 +87,9 @@ class SlotGame extends FlameGame
       'bar_voicevox.png',
       'watermelon_zundamochi.png',
       'cherry_edamame.png',
-      'replay_edamame.png',
-      'bell_ahiru.png'
+      'replay_zundamon.png',
+      'bell_ahiru.png',
+      'plum_edamame.png',
     ]);
     await FlameAudio.audioCache.loadAll([
       'zundamon_zun.wav',
@@ -89,9 +99,9 @@ class SlotGame extends FlameGame
     ]);
 
     slot = SlotComponent([
-      ReelComponent(SlotSymbol.leftReel, symbolSize),
-      ReelComponent(SlotSymbol.centerReel, symbolSize),
-      ReelComponent(SlotSymbol.rightReel, symbolSize),
+      ReelComponent(SlotSymbol.first, symbolSize),
+      ReelComponent(SlotSymbol.second, symbolSize),
+      ReelComponent(SlotSymbol.third, symbolSize),
     ]);
     slot.position = canvasSize * .5;
 

@@ -66,23 +66,44 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   void update(double dt) {
     if (inBet) {
       if (reels.every((reel) => !reel.isRoll)) {
-        final table = reels.map((reel) => reel.visibleSymbol()).toList();
+        final left = reels[0].visibleSymbols();
+        final center = reels[1].visibleSymbols();
+        final right = reels[2].visibleSymbols();
+        print('$left');
+        print('$center');
+        print('$right');
 
-        if (table.every((symbols) => symbols != null)) {
-          // 同じ絵柄で揃った
-          if (matchAll(table[0], table[1], table[2])) {
-            gameRef.addPoint(10);
-            rollStream.add(SlotEvent.smallBonus);
-          }
+        if (left != null && center != null && right != null) {
+          final q = [
+            (0, 1, 2), // 上から下斜め
+            (2, 1, 0), // 下から上斜め
+            (0, 0, 0), // 上段
+            (1, 1, 1), // 中段
+            (2, 2, 2), // 下段
+          ];
 
-          if (table[0] == SlotSymbol.zu &&
-              table[1] == SlotSymbol.nn &&
-              table[2] == SlotSymbol.da) {
-            Future.delayed(const Duration(milliseconds: 1000), () {
-              FlameAudio.play('zundamon_atari.wav');
-            });
-            gameRef.addPoint(100);
-            rollStream.add(SlotEvent.bigBonus);
+          for (var (x, y, z) in q) {
+            final l = left[x];
+            final c = center[y];
+            final r = right[z];
+
+            if (l == SlotSymbol.zu &&
+                c == SlotSymbol.nn &&
+                r == SlotSymbol.da) {
+              Future.delayed(const Duration(milliseconds: 1000), () {
+                FlameAudio.play('zundamon_atari.wav');
+              });
+
+              gameRef.addZundaPoint();
+              rollStream.add(SlotEvent.bigBonus);
+            }
+
+            if (matchAll(l, c, r)) {
+              print("$l, $c, $r");
+
+              gameRef.addPoint(l);
+              rollStream.add(SlotEvent.smallBonus);
+            }
           }
 
           inBet = false;
