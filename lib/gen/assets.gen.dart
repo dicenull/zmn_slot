@@ -40,11 +40,43 @@ class $AssetsAudioGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/bar_voicevox.png
+  AssetGenImage get barVoicevox =>
+      const AssetGenImage('assets/images/bar_voicevox.png');
+
+  /// File path: assets/images/bell_ahiru.png
+  AssetGenImage get bellAhiru =>
+      const AssetGenImage('assets/images/bell_ahiru.png');
+
+  /// File path: assets/images/cherry_edamame.png
+  AssetGenImage get cherryEdamame =>
+      const AssetGenImage('assets/images/cherry_edamame.png');
+
   /// File path: assets/images/mon.png
   AssetGenImage get mon => const AssetGenImage('assets/images/mon.png');
 
   /// File path: assets/images/nanoda.png
   AssetGenImage get nanoda => const AssetGenImage('assets/images/nanoda.png');
+
+  /// File path: assets/images/replay_edamame.png
+  AssetGenImage get replayEdamame =>
+      const AssetGenImage('assets/images/replay_edamame.png');
+
+  /// File path: assets/images/seven_da.png
+  AssetGenImage get sevenDa =>
+      const AssetGenImage('assets/images/seven_da.png');
+
+  /// File path: assets/images/seven_nn.png
+  AssetGenImage get sevenNn =>
+      const AssetGenImage('assets/images/seven_nn.png');
+
+  /// File path: assets/images/seven_zu.png
+  AssetGenImage get sevenZu =>
+      const AssetGenImage('assets/images/seven_zu.png');
+
+  /// File path: assets/images/watermelon_zundamochi.png
+  AssetGenImage get watermelonZundamochi =>
+      const AssetGenImage('assets/images/watermelon_zundamochi.png');
 
   /// File path: assets/images/zunda.png
   AssetGenImage get zunda => const AssetGenImage('assets/images/zunda.png');
@@ -52,7 +84,19 @@ class $AssetsImagesGen {
   $AssetsImagesZundamonGen get zundamon => const $AssetsImagesZundamonGen();
 
   /// List of all assets
-  List<AssetGenImage> get values => [mon, nanoda, zunda];
+  List<AssetGenImage> get values => [
+        barVoicevox,
+        bellAhiru,
+        cherryEdamame,
+        mon,
+        nanoda,
+        replayEdamame,
+        sevenDa,
+        sevenNn,
+        sevenZu,
+        watermelonZundamochi,
+        zunda
+      ];
 }
 
 class $AssetsImagesZundamonGen {

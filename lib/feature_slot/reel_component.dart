@@ -17,9 +17,8 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   int stopIndex = -1;
   final speed = 800;
 
-  int get length => _symbols.length;
-
   bool onCheckStopCurrent = false;
+
   _SuberiState? _suberiState;
   double reelPosition = 0;
   ReelComponent(this._symbols, this.symbolSize)
@@ -27,9 +26,16 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         reelHeight = symbolSize * _symbols.length {
     _symbols.asMap().forEach((y, symbol) {
       final image = switch (symbol) {
-        SlotSymbol.zunda => Flame.images.fromCache('zunda.png'),
-        SlotSymbol.mon => Flame.images.fromCache('mon.png'),
-        SlotSymbol.nanoda => Flame.images.fromCache('nanoda.png'),
+        SlotSymbol.zu => Flame.images.fromCache('seven_zu.png'),
+        SlotSymbol.nn => Flame.images.fromCache('seven_nn.png'),
+        SlotSymbol.da => Flame.images.fromCache('seven_da.png'),
+        SlotSymbol.bar => Flame.images.fromCache('bar_voicevox.png'),
+        SlotSymbol.watermelon =>
+          Flame.images.fromCache('watermelon_zundamochi.png'),
+        SlotSymbol.cherry => Flame.images.fromCache('cherry_edamame.png'),
+        SlotSymbol.replay => Flame.images.fromCache('replay_edamame.png'),
+        // TODO: Handle this case.
+        SlotSymbol.bell => Flame.images.fromCache('bell_ahiru.png'),
       };
 
       _reel.add(_SymbolState(
@@ -38,6 +44,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
       ));
     });
   }
+  int get length => _symbols.length;
 
   Vector2 get slotCenter => Vector2(0, reelHeight * .5);
 
@@ -53,7 +60,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     );
     final bgColor = BasicPalette.white.withAlpha(50);
 
-    canvas.clipRect(reelRange);
+    // canvas.clipRect(reelRange);
     canvas.drawRect(reelRange, bgColor.paint());
 
     _reel.asMap().forEach((y, state) {
@@ -130,10 +137,10 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     reelPosition = (reelPosition / symbolSize).ceil() * symbolSize;
 
     final sfx = switch (visibleSymbol()) {
-      null => '',
-      SlotSymbol.zunda => 'zundamon_zunda.wav',
-      SlotSymbol.mon => 'zundamon_mon.wav',
-      SlotSymbol.nanoda => 'zundamon_nanoda.wav',
+      SlotSymbol.zu => 'zundamon_zunda.wav',
+      SlotSymbol.nn => 'zundamon_mon.wav',
+      SlotSymbol.da => 'zundamon_nanoda.wav',
+      null || _ => '',
     };
     if (sfx.isNotEmpty) FlameAudio.play(sfx);
   }

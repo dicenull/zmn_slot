@@ -75,9 +75,9 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
             rollStream.add(SlotEvent.smallBonus);
           }
 
-          if (table[0] == SlotSymbol.zunda &&
-              table[1] == SlotSymbol.mon &&
-              table[2] == SlotSymbol.nanoda) {
+          if (table[0] == SlotSymbol.zu &&
+              table[1] == SlotSymbol.nn &&
+              table[2] == SlotSymbol.da) {
             Future.delayed(const Duration(milliseconds: 1000), () {
               FlameAudio.play('zundamon_atari.wav');
             });

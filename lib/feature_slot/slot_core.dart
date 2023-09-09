@@ -21,33 +21,6 @@ enum SlotEvent {
 
 class SlotGame extends FlameGame
     with VerticalDragDetector, TapDetector, KeyboardEvents {
-  static const List<SlotSymbol> leftReel = [
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
-  ];
-
-  static const List<SlotSymbol> centerReel = [
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-  ];
-
-  static const List<SlotSymbol> rightReel = [
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
-    SlotSymbol.nanoda,
-    SlotSymbol.zunda,
-    SlotSymbol.mon,
-  ];
-
   TextPaint textPaint = TextPaint(
     style: const TextStyle(
       fontSize: 100,
@@ -98,7 +71,16 @@ class SlotGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    await Flame.images.loadAll(['zunda.png', 'mon.png', 'nanoda.png']);
+    await Flame.images.loadAll([
+      'seven_zu.png',
+      'seven_nn.png',
+      'seven_da.png',
+      'bar_voicevox.png',
+      'watermelon_zundamochi.png',
+      'cherry_edamame.png',
+      'replay_edamame.png',
+      'bell_ahiru.png'
+    ]);
     await FlameAudio.audioCache.loadAll([
       'zundamon_zun.wav',
       'zundamon_mon.wav',
@@ -107,9 +89,9 @@ class SlotGame extends FlameGame
     ]);
 
     slot = SlotComponent([
-      ReelComponent(leftReel, symbolSize),
-      ReelComponent(centerReel, symbolSize),
-      ReelComponent(rightReel, symbolSize),
+      ReelComponent(SlotSymbol.leftReel, symbolSize),
+      ReelComponent(SlotSymbol.centerReel, symbolSize),
+      ReelComponent(SlotSymbol.rightReel, symbolSize),
     ]);
 
     await add(slot);
