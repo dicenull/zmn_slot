@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 
 const isDebug = false;
 
-class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
+class ReelComponent extends PositionComponent
+    with HasGameRef<SlotGame>, HasPaint {
   final List<SlotSymbol> _symbols;
   final double reelHeight;
   final double symbolSize;
@@ -42,20 +43,25 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         SlotSymbol.plum => Flame.images.fromCache('plum_edamame.png'),
       };
 
-      _reel.add(_SymbolState(
+      final spriteComponent = SpriteComponent(
         sprite: Sprite(image),
+        size: Vector2.all(symbolSize),
+        anchor: Anchor.topLeft,
+      );
+      add(spriteComponent);
+      _reel.add(_SymbolState(
+        sprite: spriteComponent,
         symbol: symbol,
       ));
     });
   }
   int get length => _symbols.length;
-
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
 
   double get visibleReelHeight => symbolSize * 3;
+
   SlotSymbol? get _suberiSymbol =>
       (stopIndex != -1) ? _reel[stopIndex].symbol : null;
-
   double calcDrawHeight(int y) =>
       (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
 
@@ -76,25 +82,15 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
     canvas.drawRect(reelRange, bgColor.paint());
     canvas.drawRect(reelRange, borderColor);
-    _reel.asMap().forEach((y, state) {
-      final p = Vector2(0, calcDrawHeight(y));
 
-      state.sprite.render(
-        canvas,
-        size: Vector2(symbolSize, symbolSize),
-        position: p,
-        anchor: Anchor.topLeft,
-      );
-
-      if (isDebug) {
+    if (isDebug) {
+      _reel.asMap().forEach((y, state) {
+        final p = state.sprite.position;
         textPaint.render(canvas, y.toString(), p);
         canvas.drawRect(
             Rect.fromPoints(p.toOffset(), Offset(symbolSize, symbolSize)),
             BasicPalette.green.paint()..style = PaintingStyle.stroke);
-      }
-    });
-
-    if (isDebug) {
+      });
       canvas.drawCircle(reelCenter.toOffset(), 5, bgColor.paint());
 
       final centerIndex = _calcCenterIndex();
@@ -133,6 +129,10 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         }
       }
     }
+
+    _reel.asMap().forEach((y, state) {
+      state.sprite.position = Vector2(0, calcDrawHeight(y));
+    });
 
     super.update(dt);
   }
@@ -187,7 +187,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 }
 
 class _SymbolState {
-  final Sprite sprite;
+  final SpriteComponent sprite;
   final SlotSymbol symbol;
 
   _SymbolState({required this.sprite, required this.symbol});
