@@ -19,9 +19,8 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   int stopIndex = -1;
   final speed = 800;
 
-  bool onCheckStopCurrent = false;
+  bool isStopReady = false;
 
-  _SuberiState? _suberiState;
   double reelPosition = 0;
   TextPaint textPaint = TextPaint(
     style: const TextStyle(fontSize: 16.0, color: Colors.blue),
@@ -49,11 +48,13 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
       ));
     });
   }
-
   int get length => _symbols.length;
 
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
+
   double get visibleReelHeight => symbolSize * 3;
+  SlotSymbol? get _suberiSymbol =>
+      (stopIndex != -1) ? _reel[stopIndex].symbol : null;
 
   double calcDrawHeight(int y) =>
       (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
@@ -102,7 +103,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   }
 
   void stopCurrent() {
-    onCheckStopCurrent = true;
+    isStopReady = true;
   }
 
   @override
@@ -113,16 +114,15 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
       reelPosition += amount;
       reelPosition %= reelHeight;
 
-      if (onCheckStopCurrent) {
-        _stopCurrent();
-        onCheckStopCurrent = false;
-      }
-
-      final symbolCenterHeight = calcDrawHeight(stopIndex) + symbolSize * .5;
-      final diff = reelCenter.y - symbolCenterHeight;
-      if (diff.abs() < amount) {
-        if (_suberiState?.symbol == _reel[stopIndex].symbol) {
-          _onStop();
+      if (isStopReady) {
+        final centerIndex = _calcCenterIndex();
+        final symbolCenterHeight =
+            calcDrawHeight(centerIndex) + symbolSize * .5;
+        final diff = reelCenter.y - symbolCenterHeight;
+        if (diff.abs() < amount) {
+          if (_suberiSymbol == _reel[centerIndex].symbol) {
+            _onStop();
+          }
         }
       }
     }
@@ -155,7 +155,8 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   void _onStop() {
     isRoll = false;
-    _suberiState = null;
+    isStopReady = false;
+
     reelPosition = (reelPosition / symbolSize).ceil() * symbolSize;
 
     final sfx = switch (visibleSymbol()) {
@@ -166,21 +167,6 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
     };
     if (sfx.isNotEmpty) FlameAudio.play(sfx);
   }
-
-  void _stopCurrent() {
-    if (!isRoll) return;
-
-    var symbol = _reel[stopIndex].symbol;
-    _suberiState = _SuberiState(symbol, 1);
-  }
-}
-
-/// ピッタリ中央で止める滑りを入れるための状態
-class _SuberiState {
-  final SlotSymbol symbol;
-  final int height;
-
-  _SuberiState(this.symbol, this.height);
 }
 
 class _SymbolState {
