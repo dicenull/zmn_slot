@@ -18,35 +18,42 @@ class HomePage extends HookConsumerWidget {
         title: const Text('ずんだもんスロット'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 300,
-              height: 300,
-              child: GameWidget(
-                game: SlotGame(),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          constraints: const BoxConstraints(minHeight: 200, maxWidth: 700),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Flexible(
+                flex: 1,
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: _Message(),
+                ),
               ),
-            ),
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.all(32),
-                child: const Row(
+              Flexible(
+                flex: 2,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(
-                      flex: 7,
-                      child: _Message(),
+                      flex: 4,
+                      fit: FlexFit.tight,
+                      child: SizedBox(
+                        child: GameWidget(
+                          game: SlotGame(),
+                        ),
+                      ),
                     ),
-                    Flexible(
-                      flex: 3,
+                    const Flexible(
+                      flex: 1,
                       child: _Zundamon(),
                     ),
                   ],
                 ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -77,16 +84,16 @@ class _Message extends HookConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.grey)),
-      constraints: const BoxConstraints(minHeight: 100),
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.background,
+        border: Border.all(color: Theme.of(context).colorScheme.primary),
+      ),
       alignment: Alignment.center,
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: AutoSizeText(
           textState.value,
-          style: const TextStyle(fontSize: 32),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
     );
@@ -101,10 +108,17 @@ class _Zundamon extends HookConsumerWidget {
     final zundamonImage = useState(Assets.images.zundamon.zundamon0001);
 
     useEffect(() {
+      final zundaList = Assets.images.zundamon.values;
+
+      Future.microtask(() async {
+        for (var zunda in zundaList) {
+          precacheImage(zunda.provider(), context);
+        }
+      });
+
       final subsc = rollStream.stream.listen((event) {
         if (event != SlotEvent.roll) return;
 
-        final zundaList = Assets.images.zundamon.values;
         final index = Random().nextInt(zundaList.length);
 
         zundamonImage.value = zundaList[index];
@@ -113,9 +127,6 @@ class _Zundamon extends HookConsumerWidget {
       return subsc.cancel;
     }, const []);
 
-    return Container(
-      constraints: const BoxConstraints(minWidth: 100, minHeight: 100),
-      child: zundamonImage.value.image(),
-    );
+    return zundamonImage.value.image();
   }
 }

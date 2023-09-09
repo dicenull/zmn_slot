@@ -8,8 +8,14 @@ class App extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appRouter = ref.watch(appRouterProvider);
+    final themeData = ThemeData(
+      useMaterial3: true,
+      colorSchemeSeed: const Color.fromARGB(255, 51, 166, 94),
+      brightness: Brightness.dark,
+    );
 
     return MaterialApp.router(
+      theme: themeData,
       routerConfig: appRouter,
     );
   }
