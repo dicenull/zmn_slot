@@ -23,7 +23,7 @@ class SlotGame extends FlameGame
     with VerticalDragDetector, TapDetector, KeyboardEvents {
   TextPaint textPaint = TextPaint(
     style: const TextStyle(
-      fontSize: 100,
+      fontSize: 50,
       color: Colors.white,
     ),
   );
@@ -93,6 +93,7 @@ class SlotGame extends FlameGame
       ReelComponent(SlotSymbol.centerReel, symbolSize),
       ReelComponent(SlotSymbol.rightReel, symbolSize),
     ]);
+    slot.position = canvasSize * .5;
 
     await add(slot);
   }

@@ -30,13 +30,13 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     addAll(reels);
 
     reels.asMap().forEach((x, reel) {
-      // なぜか[symbolSize]の半分だけズレるので調整している
-      final padding = (x - 1) * gameRef.symbolSize * .5;
+      final padding = (x - 1) * gameRef.symbolSize;
 
-      reel.position = Vector2(padding, 0);
+      reel.position = Vector2(
+        padding - gameRef.symbolSize * .5,
+        -reel.visibleReelHeight * .5,
+      );
     });
-
-    position = Vector2(gameRef.canvasSize.x * .5 - gameRef.symbolSize * .5, 0);
   }
 
   void roll() {

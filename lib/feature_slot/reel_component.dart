@@ -6,6 +6,8 @@ import 'package:flame/palette.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
+const isDebug = false;
+
 class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
   final List<SlotSymbol> _symbols;
   final double reelHeight;
@@ -21,6 +23,9 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   _SuberiState? _suberiState;
   double reelPosition = 0;
+  TextPaint textPaint = TextPaint(
+    style: const TextStyle(fontSize: 16.0, color: Colors.blue),
+  );
   ReelComponent(this._symbols, this.symbolSize)
       : _reel = <_SymbolState>[],
         reelHeight = symbolSize * _symbols.length {
@@ -44,39 +49,55 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
       ));
     });
   }
+
   int get length => _symbols.length;
 
-  Vector2 get slotCenter => Vector2(0, reelHeight * .5);
+  Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
+  double get visibleReelHeight => symbolSize * 3;
 
-  double calcHeight(int y) => (y * symbolSize + reelPosition) % reelHeight;
+  double calcDrawHeight(int y) =>
+      (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
 
   @override
   void render(Canvas canvas) {
     final reelRange = Rect.fromCenter(
-      center: Offset(symbolSize, reelHeight + symbolSize) * .5 +
-          position.toOffset(),
+      center: reelCenter.toOffset(),
       width: symbolSize,
-      height: symbolSize * 1.5,
+      height: visibleReelHeight,
     );
-    final bgColor = BasicPalette.white.withAlpha(50);
+    final bgColor = BasicPalette.white.withAlpha(100);
+    final borderColor = BasicPalette.white.paint()
+      ..style = PaintingStyle.stroke;
 
-    // canvas.clipRect(reelRange);
+    if (!isDebug) {
+      canvas.clipRect(reelRange);
+    }
+
     canvas.drawRect(reelRange, bgColor.paint());
-
+    canvas.drawRect(reelRange, borderColor);
     _reel.asMap().forEach((y, state) {
-      final p = Vector2(0, calcHeight(y));
+      final p = Vector2(0, calcDrawHeight(y));
 
       state.sprite.render(
         canvas,
         size: Vector2(symbolSize, symbolSize),
-        position: p + position,
+        position: p,
         anchor: Anchor.topLeft,
       );
+
+      if (isDebug) {
+        textPaint.render(canvas, y.toString(), p);
+      }
     });
+
+    if (isDebug) {
+      canvas.drawCircle(reelCenter.toOffset(), 5, bgColor.paint());
+    }
   }
 
   void roll(int index) {
     stopIndex = index;
+    print('${_reel[stopIndex].symbol} at $stopIndex');
     isRoll = true;
   }
 
@@ -97,7 +118,8 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
         onCheckStopCurrent = false;
       }
 
-      final diff = slotCenter.y - calcHeight(stopIndex);
+      final symbolCenterHeight = calcDrawHeight(stopIndex) + symbolSize * .5;
+      final diff = reelCenter.y - symbolCenterHeight;
       if (diff.abs() < amount) {
         if (_suberiState?.symbol == _reel[stopIndex].symbol) {
           _onStop();
@@ -121,7 +143,7 @@ class ReelComponent extends PositionComponent with HasGameRef<SlotGame> {
 
     // 最も画面の中心に近いシンボルを探す
     _reel.asMap().forEach((i, state) {
-      final diff = slotCenter.y - calcHeight(i);
+      final diff = reelCenter.y - calcDrawHeight(i);
       if (diff > 0 && minDiff > diff) {
         minDiff = diff;
         index = i;
