@@ -1,6 +1,7 @@
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -55,15 +56,35 @@ class ReelComponent extends PositionComponent
       ));
     });
   }
+
+  SequenceEffect get hitEffect => SequenceEffect([
+        ColorEffect(
+          const Color(0xFFFFFFFF),
+          const Offset(0.0, 0.5),
+          EffectController(duration: 1, curve: Curves.bounceOut),
+        ),
+        ColorEffect(
+          const Color(0xFFFFFFFF),
+          const Offset(0.5, 0),
+          EffectController(duration: 0.1, startDelay: 1),
+        ),
+      ]);
   int get length => _symbols.length;
+
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
 
   double get visibleReelHeight => symbolSize * 3;
-
   SlotSymbol? get _suberiSymbol =>
       (stopIndex != -1) ? _reel[stopIndex].symbol : null;
+
   double calcDrawHeight(int y) =>
       (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
+
+  void hit(int pos) {
+    final hitIndex = (pos - 1 + stopIndex + _reel.length) % _reel.length;
+
+    _reel[hitIndex].sprite.add(hitEffect);
+  }
 
   @override
   void render(Canvas canvas) {

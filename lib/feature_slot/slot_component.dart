@@ -103,6 +103,10 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
 
               gameRef.addPoint(l);
               rollStream.add(SlotEvent.smallBonus);
+
+              reels[0].hit(x);
+              reels[1].hit(y);
+              reels[2].hit(z);
             }
           }
 
