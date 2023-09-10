@@ -33,23 +33,10 @@ class HomePage extends HookConsumerWidget {
               ),
               Flexible(
                 flex: 2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      flex: 4,
-                      fit: FlexFit.tight,
-                      child: SizedBox(
-                        child: GameWidget(
-                          game: SlotGame(),
-                        ),
-                      ),
-                    ),
-                    const Flexible(
-                      flex: 1,
-                      child: _Zundamon(),
-                    ),
-                  ],
+                child: SizedBox(
+                  child: GameWidget(
+                    game: SlotGame(),
+                  ),
                 ),
               ),
             ],

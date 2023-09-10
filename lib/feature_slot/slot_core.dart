@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_component.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
+import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
@@ -102,8 +103,8 @@ class SlotGame extends FlameGame
       ReelComponent(SlotSymbol.first, symbolSize),
       ReelComponent(SlotSymbol.second, symbolSize),
       ReelComponent(SlotSymbol.third, symbolSize),
-    ]);
-    slot.position = canvasSize * .5;
+    ])
+      ..position = canvasSize * .5;
 
     await add(slot);
   }
@@ -132,7 +133,12 @@ class SlotGame extends FlameGame
 
   @override
   void render(Canvas canvas) {
-    textPaint.render(canvas, _point.toString(), Vector2(0, 0));
+    textPaint.render(
+      canvas,
+      _point.toString(),
+      Vector2(canvasSize.x * .5, 0),
+      anchor: Anchor.topCenter,
+    );
 
     super.render(canvas);
   }

@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
+import 'package:app/feature_slot/zudamon_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   final List<ReelComponent> reels;
 
+  late final ZundamonComponent zundamon;
   // state
   bool inBet = false;
 
@@ -37,6 +39,12 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
         -reel.visibleReelHeight * .5,
       );
     });
+
+    zundamon = ZundamonComponent()
+      ..position = Vector2(gameRef.symbolSize * 2, 0)
+      ..anchor = Anchor.center;
+
+    add(zundamon);
   }
 
   void roll() {
@@ -53,6 +61,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
       final index = math.Random().nextInt(reel.length);
       reel.roll(index);
     }
+    zundamon.current = ZundamonState.idle;
     inBet = true;
   }
 
@@ -107,6 +116,8 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
               reels[0].hit(x);
               reels[1].hit(y);
               reels[2].hit(z);
+
+              zundamon.current = ZundamonState.hit;
             }
           }
 
