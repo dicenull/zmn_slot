@@ -108,7 +108,11 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     for (var reel in reels) {
       reel.roll();
     }
-    zundamon.current = ZundamonState.idle;
+
+    zundamon.current = switch (gameRef.slotManager.phase.value) {
+      SlotPhase.miss => ZundamonState.idle,
+      _ => ZundamonState.chance,
+    };
     for (var button in buttons) {
       button.reset();
     }
@@ -119,10 +123,11 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     if (!reels[index].isRoll) return;
 
     // 0:最初, 1: 二つ目, 2:最後
-    final count = reels.map((r) => r.isRoll).length;
+    final count = reels.where((r) => !r.isRoll).length;
     final suberi = switch (gameRef.slotManager.phase.value) {
       SlotPhase.replay => (SlotSymbol.replay, ReelPos.center),
-      SlotPhase.plum => (SlotSymbol.plum, ReelPos.center),
+      SlotPhase.plum => (SlotSymbol.plum, ReelPos.values[count]),
+      SlotPhase.zunda => (SlotSymbol.watermelon, ReelPos.top),
       _ => null,
     };
 

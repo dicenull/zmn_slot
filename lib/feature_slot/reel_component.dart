@@ -19,7 +19,7 @@ class ReelComponent extends PositionComponent
   // state
   bool isRoll = false;
   int stopIndex = -1;
-  final speed = 800;
+  final speed = 1000;
 
   bool isStopReady = false;
 
