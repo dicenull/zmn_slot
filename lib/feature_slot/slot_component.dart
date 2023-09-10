@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:app/feature_slot/reel_button_component.dart';
 import 'package:app/feature_slot/reel_component.dart';
@@ -72,9 +71,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
 
     rollStream.add(SlotEvent.roll);
     for (var reel in reels) {
-      // どこに止まるかを確定させる
-      final index = math.Random().nextInt(reel.length);
-      reel.roll(index);
+      reel.roll();
     }
     zundamon.current = ZundamonState.idle;
     for (var button in buttons) {

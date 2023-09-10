@@ -27,6 +27,8 @@ class ReelComponent extends PositionComponent
   TextPaint textPaint = TextPaint(
     style: const TextStyle(fontSize: 16.0, color: Colors.blue),
   );
+  bool isActiveSuberi = false;
+
   ReelComponent(this._symbols, this.symbolSize)
       : _reel = <_SymbolState>[],
         reelHeight = symbolSize * _symbols.length {
@@ -56,7 +58,6 @@ class ReelComponent extends PositionComponent
       ));
     });
   }
-
   SequenceEffect get hitEffect => SequenceEffect([
         ColorEffect(
           const Color(0xFFFFFFFF),
@@ -69,10 +70,10 @@ class ReelComponent extends PositionComponent
           EffectController(duration: 0.1, startDelay: 1),
         ),
       ]);
+
   int get length => _symbols.length;
 
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
-
   double get visibleReelHeight => symbolSize * 3;
   SlotSymbol? get _suberiSymbol =>
       (stopIndex != -1) ? _reel[stopIndex].symbol : null;
@@ -121,8 +122,8 @@ class ReelComponent extends PositionComponent
     }
   }
 
-  void roll(int index) {
-    stopIndex = index;
+  void roll() {
+    isActiveSuberi = false;
     isRoll = true;
   }
 
@@ -144,7 +145,7 @@ class ReelComponent extends PositionComponent
             calcDrawHeight(centerIndex) + symbolSize * .5;
         final diff = reelCenter.y - symbolCenterHeight;
         if (diff.abs() < amount) {
-          if (_suberiSymbol == _reel[centerIndex].symbol) {
+          if (!isActiveSuberi || _suberiSymbol == _reel[centerIndex].symbol) {
             _onStop(centerIndex);
           }
         }
