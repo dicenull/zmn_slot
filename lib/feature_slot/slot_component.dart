@@ -50,7 +50,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   void roll() {
     if (inBet) return;
 
-    final canPlay = gameRef.playSlot();
+    final canPlay = gameRef.slotManager.playSlot();
     if (!canPlay) {
       return;
     }
@@ -103,14 +103,14 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
                 FlameAudio.play('zundamon_atari.wav');
               });
 
-              gameRef.addZundaPoint();
+              gameRef.slotManager.addZundaPoint();
               rollStream.add(SlotEvent.bigBonus);
             }
 
             if (matchAll(l, c, r)) {
               print("$l, $c, $r");
 
-              gameRef.addPoint(l);
+              gameRef.slotManager.addPoint(l);
               rollStream.add(SlotEvent.smallBonus);
 
               reels[0].hit(x);

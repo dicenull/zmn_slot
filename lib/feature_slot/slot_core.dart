@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_component.dart';
+import 'package:app/feature_slot/slot_manager.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -31,22 +32,9 @@ class SlotGame extends FlameGame
 
   late final SlotComponent slot;
   final symbolSize = 64.0;
-  int _point = 100;
 
   int _index = 0;
-
-  void addPoint(SlotSymbol? symbol) {
-    final winPoint = switch (symbol) {
-      null => 0,
-      _ => symbol.point,
-    };
-
-    _point += winPoint;
-  }
-
-  void addZundaPoint() {
-    _point += 100;
-  }
+  final slotManager = SlotManager();
 
   @override
   KeyEventResult onKeyEvent(
@@ -121,21 +109,11 @@ class SlotGame extends FlameGame
     _index = 0;
   }
 
-  bool playSlot() {
-    _point -= 3;
-    if (_point < 0) {
-      _point = 0;
-      return false;
-    }
-
-    return true;
-  }
-
   @override
   void render(Canvas canvas) {
     textPaint.render(
       canvas,
-      _point.toString(),
+      slotManager.point.value.toString(),
       Vector2(canvasSize.x * .5, 0),
       anchor: Anchor.topCenter,
     );
