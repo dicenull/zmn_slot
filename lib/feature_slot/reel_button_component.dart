@@ -30,7 +30,6 @@ class ReelButtonComponent extends PositionComponent
   @override
   void render(Canvas canvas) {
     final painter = pressed ? pressColor : defaultColor;
-    print(pressed);
 
     final area = Rect.fromCenter(
       center: (size * .5).toOffset(),

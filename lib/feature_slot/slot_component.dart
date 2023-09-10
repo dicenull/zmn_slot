@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/feature_slot/reel_button_component.dart';
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_core.dart';
+import 'package:app/feature_slot/slot_manager.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:app/feature_slot/zudamon_component.dart';
 import 'package:flame/components.dart';
@@ -26,6 +27,40 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
 
   SlotComponent(this.reels)
       : buttons = List.generate(reels.length, (_) => ReelButtonComponent());
+
+  ((SlotSymbol, SlotSymbol, SlotSymbol), (int, int, int))? checkHitSymbol(
+      List<SlotSymbol> left, List<SlotSymbol> center, List<SlotSymbol> right) {
+    final q = [
+      (0, 1, 2), // 上から下斜め
+      (2, 1, 0), // 下から上斜め
+      (0, 0, 0), // 上段
+      (1, 1, 1), // 中段
+      (2, 2, 2), // 下段
+    ];
+
+    SlotSymbol? maxMatch;
+    (int, int, int)? matchPos;
+    for (var (x, y, z) in q) {
+      final l = left[x];
+      final c = center[y];
+      final r = right[z];
+
+      if (l == SlotSymbol.zu && c == SlotSymbol.nn && r == SlotSymbol.da) {
+        return ((l, c, r), (x, y, z));
+      }
+
+      if (matchAll(l, c, r)) {
+        if (maxMatch == null || maxMatch.point < l.point) {
+          maxMatch = l;
+          matchPos = (x, y, z);
+        }
+      }
+    }
+
+    if (maxMatch == null) return null;
+
+    return ((maxMatch, maxMatch, maxMatch), matchPos!);
+  }
 
   bool matchAll<T>(T a, T b, T c) => a == b && b == c;
 
@@ -83,7 +118,15 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   void stop(int index) {
     if (!reels[index].isRoll) return;
 
-    reels[index].stopCurrent();
+    // 0:最初, 1: 二つ目, 2:最後
+    final count = reels.map((r) => r.isRoll).length;
+    final suberi = switch (gameRef.slotManager.phase.value) {
+      SlotPhase.replay => (SlotSymbol.replay, ReelPos.center),
+      SlotPhase.plum => (SlotSymbol.plum, ReelPos.center),
+      _ => null,
+    };
+
+    reels[index].stopCurrent(suberi);
     buttons[index].push();
   }
 
@@ -99,18 +142,11 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
         print('$right');
 
         if (left != null && center != null && right != null) {
-          final q = [
-            (0, 1, 2), // 上から下斜め
-            (2, 1, 0), // 下から上斜め
-            (0, 0, 0), // 上段
-            (1, 1, 1), // 中段
-            (2, 2, 2), // 下段
-          ];
+          inBet = false;
+          final hitSymbol = checkHitSymbol(left, center, right);
 
-          for (var (x, y, z) in q) {
-            final l = left[x];
-            final c = center[y];
-            final r = right[z];
+          if (hitSymbol != null) {
+            final ((l, c, r), (x, y, z)) = hitSymbol;
 
             if (l == SlotSymbol.zu &&
                 c == SlotSymbol.nn &&
@@ -121,11 +157,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
 
               gameRef.slotManager.addZundaPoint();
               rollStream.add(SlotEvent.bigBonus);
-            }
-
-            if (matchAll(l, c, r)) {
-              print("$l, $c, $r");
-
+            } else {
               gameRef.slotManager.addPoint(l);
               rollStream.add(SlotEvent.smallBonus);
 
@@ -136,8 +168,6 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
               zundamon.current = ZundamonState.hit;
             }
           }
-
-          inBet = false;
         }
       }
     }

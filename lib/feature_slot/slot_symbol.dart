@@ -23,13 +23,14 @@ enum SlotSymbol {
         bar,
         plum,
         watermelon,
-        bell,
         replay,
+        bell,
         da,
         plum,
         watermelon,
         nn,
         replay,
+        plum,
       ];
 
   static List<SlotSymbol> get second => [
@@ -45,14 +46,15 @@ enum SlotSymbol {
         watermelon,
         zu,
         plum,
-        bell,
         replay,
         cherry,
         plum,
+        watermelon,
         da,
         nn,
         replay,
         plum,
+        watermelon,
       ];
 
   static List<SlotSymbol> get third => [
@@ -74,6 +76,7 @@ enum SlotSymbol {
         cherry,
         da,
         replay,
+        watermelon,
         nn,
         plum,
       ];

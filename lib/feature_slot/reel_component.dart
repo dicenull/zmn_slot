@@ -27,8 +27,8 @@ class ReelComponent extends PositionComponent
   TextPaint textPaint = TextPaint(
     style: const TextStyle(fontSize: 16.0, color: Colors.blue),
   );
-  bool isActiveSuberi = false;
 
+  (SlotSymbol, ReelPos)? _suberi;
   ReelComponent(this._symbols, this.symbolSize)
       : _reel = <_SymbolState>[],
         reelHeight = symbolSize * _symbols.length {
@@ -58,6 +58,7 @@ class ReelComponent extends PositionComponent
       ));
     });
   }
+
   SequenceEffect get hitEffect => SequenceEffect([
         ColorEffect(
           const Color(0xFFFFFFFF),
@@ -72,11 +73,8 @@ class ReelComponent extends PositionComponent
       ]);
 
   int get length => _symbols.length;
-
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
   double get visibleReelHeight => symbolSize * 3;
-  SlotSymbol? get _suberiSymbol =>
-      (stopIndex != -1) ? _reel[stopIndex].symbol : null;
 
   double calcDrawHeight(int y) =>
       (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
@@ -123,11 +121,12 @@ class ReelComponent extends PositionComponent
   }
 
   void roll() {
-    isActiveSuberi = false;
+    _suberi = null;
     isRoll = true;
   }
 
-  void stopCurrent() {
+  void stopCurrent((SlotSymbol, ReelPos)? suberi) {
+    _suberi = suberi;
     isStopReady = true;
   }
 
@@ -144,8 +143,22 @@ class ReelComponent extends PositionComponent
         final symbolCenterHeight =
             calcDrawHeight(centerIndex) + symbolSize * .5;
         final diff = reelCenter.y - symbolCenterHeight;
+        final (t, c, b) = _indexList(centerIndex);
+
         if (diff.abs() < amount) {
-          if (!isActiveSuberi || _suberiSymbol == _reel[centerIndex].symbol) {
+          final suberi = _suberi;
+          if (suberi != null) {
+            final (symbol, pos) = suberi;
+            final index = switch (pos) {
+              ReelPos.top => t,
+              ReelPos.center => c,
+              ReelPos.bottom => b
+            };
+
+            if (_reel[index].symbol == symbol) {
+              _onStop(centerIndex);
+            }
+          } else {
             _onStop(centerIndex);
           }
         }
@@ -162,11 +175,7 @@ class ReelComponent extends PositionComponent
   List<SlotSymbol>? visibleSymbols() {
     if (stopIndex == -1) return null;
 
-    final len = _reel.length;
-
-    final top = (len + stopIndex - 1) % len;
-    final center = stopIndex;
-    final bottom = (stopIndex + 1) % len;
+    final (top, center, bottom) = _indexList(stopIndex);
 
     return [
       _reel[top].symbol,
@@ -191,6 +200,15 @@ class ReelComponent extends PositionComponent
     return index;
   }
 
+  (int top, int center, int bottom) _indexList(int origin) {
+    final len = _reel.length;
+
+    final top = (len + origin - 1) % len;
+    final center = origin;
+    final bottom = (origin + 1) % len;
+    return (top, center, bottom);
+  }
+
   void _onStop(int realStopIndex) {
     isRoll = false;
     isStopReady = false;
@@ -207,6 +225,8 @@ class ReelComponent extends PositionComponent
     if (sfx.isNotEmpty) FlameAudio.play(sfx);
   }
 }
+
+enum ReelPos { top, center, bottom }
 
 class _SymbolState {
   final SpriteComponent sprite;
