@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:app/feature_slot/reel_button_component.dart';
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 
 class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   final List<ReelComponent> reels;
+  final List<ReelButtonComponent> buttons;
 
   late final ZundamonComponent zundamon;
   // state
@@ -23,7 +25,8 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     ),
   );
 
-  SlotComponent(this.reels);
+  SlotComponent(this.reels)
+      : buttons = List.generate(reels.length, (_) => ReelButtonComponent());
 
   bool matchAll<T>(T a, T b, T c) => a == b && b == c;
 
@@ -44,7 +47,19 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
       ..position = Vector2(gameRef.symbolSize * 2, 0)
       ..anchor = Anchor.center;
 
+    buttons.asMap().forEach((x, button) {
+      final size = gameRef.symbolSize * .7;
+      button
+        ..size = Vector2.all(size)
+        ..position = Vector2((x - 1) * size * 1.2, gameRef.symbolSize * 2)
+        ..anchor = Anchor.center
+        ..onPressed = () {
+          stop(x);
+        };
+    });
+
     add(zundamon);
+    addAll(buttons);
   }
 
   void roll() {
@@ -62,6 +77,9 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
       reel.roll(index);
     }
     zundamon.current = ZundamonState.idle;
+    for (var button in buttons) {
+      button.reset();
+    }
     inBet = true;
   }
 
@@ -69,6 +87,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     if (!reels[index].isRoll) return;
 
     reels[index].stopCurrent();
+    buttons[index].push();
   }
 
   @override
