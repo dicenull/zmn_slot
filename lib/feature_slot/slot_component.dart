@@ -126,7 +126,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     final count = reels.where((r) => !r.isRoll).length;
     final suberi = switch (gameRef.slotManager.phase.value) {
       SlotPhase.replay => (SlotSymbol.replay, ReelPos.center),
-      SlotPhase.plum => (SlotSymbol.plum, ReelPos.values[count]),
+      SlotPhase.plum => (SlotSymbol.plum, ReelPos.values[index]),
       SlotPhase.zunda => (SlotSymbol.watermelon, ReelPos.top),
       _ => null,
     };
