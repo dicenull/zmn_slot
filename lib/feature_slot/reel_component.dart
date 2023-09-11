@@ -82,7 +82,7 @@ class ReelComponent extends PositionComponent
   void hit(int pos) {
     final hitIndex = (pos - 1 + stopIndex + _reel.length) % _reel.length;
 
-    _reel[hitIndex].sprite.add(hitEffect);
+    // _reel[hitIndex].sprite.add(hitEffect);
   }
 
   @override
