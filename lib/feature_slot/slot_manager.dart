@@ -36,17 +36,22 @@ class SlotManager extends Component with HasGameRef<SlotGame> {
   }
 
   void _setPhase() {
+    if (gameRef.zundaManager.isActive) {
+      return;
+    }
+
     final val = math.Random().nextInt(216);
 
     phase.value = switch (val) {
-      (0) => SlotPhase.atari,
-      (<= 10) => SlotPhase.cherry,
-      (<= 20) => SlotPhase.plum,
-      (<= 30) => SlotPhase.zunda,
-      (<= 40) => SlotPhase.replay,
-      (<= 45) => SlotPhase.hiyoko,
-      _ => SlotPhase.miss,
-    };
+      // 4: 5/216=2.3%でずんだもちモード
+      (<= 4) => () {
+          gameRef.zundaManager.setupRaffle();
+          return SlotPhase.zunda;
+        },
+      _ => () {
+          return SlotPhase.miss;
+        },
+    }();
   }
 }
 

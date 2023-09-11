@@ -15,6 +15,7 @@ class ZundamonComponent extends SpriteGroupComponent<ZundamonState>
       ZundamonState.idle: await zundamons[0],
       ZundamonState.chance: await zundamons[1],
       ZundamonState.hit: await zundamons[2],
+      ZundamonState.zunda: await zundamons[5],
     };
     current = ZundamonState.idle;
     scale = Vector2.all(gameRef.symbolSize * 2 / sprite!.originalSize.y);
@@ -25,4 +26,5 @@ enum ZundamonState {
   idle,
   chance,
   hit,
+  zunda,
 }

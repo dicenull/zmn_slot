@@ -17,6 +17,7 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
   late final ZundamonComponent zundamon;
   // state
   bool inBet = false;
+  SlotSymbol? _hitSymbol;
 
   final textPaint = TextPaint(
     style: const TextStyle(
@@ -103,20 +104,27 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
     if (!canPlay) {
       return;
     }
+    inBet = true;
 
-    rollStream.add(SlotEvent.roll);
     for (var reel in reels) {
       reel.roll();
     }
 
     zundamon.current = switch (gameRef.slotManager.phase.value) {
       SlotPhase.miss => ZundamonState.idle,
+      SlotPhase.zunda => ZundamonState.zunda,
       _ => ZundamonState.chance,
     };
     for (var button in buttons) {
       button.reset();
     }
-    inBet = true;
+
+    if (gameRef.zundaManager.isActive) {
+      _hitSymbol = gameRef.zundaManager.updateNext();
+      rollStream.add(SlotEvent.zunda);
+    } else {
+      rollStream.add(SlotEvent.roll);
+    }
   }
 
   void stop(int index) {
@@ -124,12 +132,12 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
 
     // 0:最初, 1: 二つ目, 2:最後
     final count = reels.where((r) => !r.isRoll).length;
-    final suberi = switch (gameRef.slotManager.phase.value) {
-      SlotPhase.replay => (SlotSymbol.replay, ReelPos.center),
-      SlotPhase.plum => (SlotSymbol.plum, ReelPos.values[index]),
-      SlotPhase.zunda => (SlotSymbol.watermelon, ReelPos.top),
-      _ => null,
-    };
+
+    (SlotSymbol, ReelPos)? suberi;
+    final hit = _hitSymbol;
+    if (hit != null) {
+      suberi = (hit, ReelPos.values[index]);
+    }
 
     reels[index].stopCurrent(suberi);
     buttons[index].push();
@@ -164,7 +172,13 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
               rollStream.add(SlotEvent.bigBonus);
             } else {
               gameRef.slotManager.addPoint(l);
-              rollStream.add(SlotEvent.smallBonus);
+
+              if (l == SlotSymbol.watermelon) {
+                rollStream.add(SlotEvent.smallBonus);
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  FlameAudio.play('zundamon_atari.wav');
+                });
+              }
 
               reels[0].hit(x);
               reels[1].hit(y);

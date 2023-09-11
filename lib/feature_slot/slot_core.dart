@@ -4,6 +4,7 @@ import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_component.dart';
 import 'package:app/feature_slot/slot_manager.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
+import 'package:app/feature_slot/zundamochi_mode_manager.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
@@ -19,6 +20,7 @@ enum SlotEvent {
   roll,
   smallBonus,
   bigBonus,
+  zunda,
 }
 
 class SlotGame extends FlameGame
@@ -35,6 +37,7 @@ class SlotGame extends FlameGame
 
   int _index = 0;
   final slotManager = SlotManager();
+  final zundaManager = ZundamochiModeManager();
 
   @override
   KeyEventResult onKeyEvent(
@@ -94,7 +97,7 @@ class SlotGame extends FlameGame
     ])
       ..position = canvasSize * .5;
 
-    await add(slot);
+    await addAll([slot, slotManager, zundaManager]);
   }
 
   @override

@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+final _game = SlotGame();
+
 class HomePage extends HookConsumerWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -35,7 +37,7 @@ class HomePage extends HookConsumerWidget {
                 flex: 2,
                 child: SizedBox(
                   child: GameWidget(
-                    game: SlotGame(),
+                    game: _game,
                   ),
                 ),
               ),
@@ -59,6 +61,8 @@ class _Message extends HookConsumerWidget {
       final subsc = rollStream.stream.listen((event) {
         final nextText = switch (event) {
           SlotEvent.roll => desc,
+          SlotEvent.zunda =>
+            'ずんだもちを作るのだ！チャンスはあと${_game.zundaManager.count}回なのだ！',
           SlotEvent.smallBonus => 'そろったのだ！',
           SlotEvent.bigBonus => 'ずんだもんなのだ！！！',
         };
