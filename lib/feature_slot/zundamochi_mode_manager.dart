@@ -12,9 +12,11 @@ class ZundamochiModeManager extends Component with HasGameRef<SlotGame> {
 
   bool get isActive => (count > 0);
 
-  void setupRaffle() {
+  bool setupRaffle() {
     count = modeLength;
     isHit = (Random().nextInt(5) == 0);
+
+    return isHit;
   }
 
   SlotSymbol updateNext() {

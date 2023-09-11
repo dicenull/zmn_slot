@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:app/feature_slot/fever_mode_manager.dart';
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
@@ -35,23 +36,41 @@ class SlotManager extends Component with HasGameRef<SlotGame> {
     return true;
   }
 
-  void _setPhase() {
-    if (gameRef.zundaManager.isActive) {
-      return;
-    }
-
+  _normalRaffle() {
     final val = math.Random().nextInt(216);
 
     phase.value = switch (val) {
       // 4: 5/216=2.3%でずんだもちモード
       (<= 4) => () {
-          gameRef.zundaManager.setupRaffle();
+          final isHit = gameRef.zundaManager.setupRaffle();
+
+          if (isHit) {
+            gameRef.feverManager.updateNextStatus();
+          }
+
           return SlotPhase.zunda;
         },
       _ => () {
           return SlotPhase.miss;
         },
     }();
+  }
+
+  void _setPhase() {
+    var hasMode = false;
+    if (gameRef.zundaManager.isActive) {
+      return;
+    } else if (gameRef.feverManager.status == FeverStatus.ready) {
+      gameRef.feverManager.updateNextStatus();
+      phase.value = SlotPhase.fever;
+      return;
+    } else if (gameRef.feverManager.status != FeverStatus.disable) {
+      return;
+    }
+
+    if (!hasMode) {
+      _normalRaffle();
+    }
   }
 }
 
@@ -63,7 +82,6 @@ enum SlotPhase {
   replay,
   miss,
   zunda,
-  atari,
-  retry,
+  fever,
   voicevox,
 }

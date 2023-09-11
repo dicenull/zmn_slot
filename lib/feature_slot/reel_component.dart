@@ -9,12 +9,15 @@ import 'package:flutter/material.dart';
 
 const isDebug = false;
 
+typedef SlotHitCallback = bool Function(List<SlotSymbol>);
+
 class ReelComponent extends PositionComponent
     with HasGameRef<SlotGame>, HasPaint {
   final List<SlotSymbol> _symbols;
   final double reelHeight;
   final double symbolSize;
   final List<_SymbolState> _reel;
+  final SlotHitCallback onHit;
 
   // state
   bool isRoll = false;
@@ -29,7 +32,9 @@ class ReelComponent extends PositionComponent
   );
 
   (SlotSymbol, ReelPos)? _suberi;
-  ReelComponent(this._symbols, this.symbolSize)
+  SlotSymbol? _meoshi;
+
+  ReelComponent(this._symbols, this.symbolSize, this.onHit)
       : _reel = <_SymbolState>[],
         reelHeight = symbolSize * _symbols.length {
     _symbols.asMap().forEach((y, symbol) {
@@ -120,10 +125,12 @@ class ReelComponent extends PositionComponent
   void roll() {
     _suberi = null;
     isRoll = true;
+    stopIndex = -1;
   }
 
-  void stopCurrent((SlotSymbol, ReelPos)? suberi) {
+  void stopCurrent((SlotSymbol, ReelPos)? suberi, SlotSymbol? meoshi) {
     _suberi = suberi;
+    _meoshi = meoshi;
     isStopReady = true;
   }
 
@@ -155,8 +162,18 @@ class ReelComponent extends PositionComponent
             if (_reel[index].symbol == symbol) {
               _onStop(centerIndex);
             }
-          } else {
+          } else if (_meoshi != null) {
+            // TODO: 目押し中はなんでも当たる
             _onStop(centerIndex);
+          } else {
+            final hitSymbol =
+                onHit([_reel[t].symbol, _reel[c].symbol, _reel[b].symbol]);
+
+            if (!hitSymbol) {
+              _onStop(centerIndex);
+            } else {
+              print('suberi');
+            }
           }
         }
       }

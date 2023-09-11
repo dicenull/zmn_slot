@@ -63,6 +63,8 @@ class _Message extends HookConsumerWidget {
           SlotEvent.roll => desc,
           SlotEvent.zunda =>
             'ずんだもちを作るのだ！チャンスはあと${_game.zundaManager.count}回なのだ！',
+          SlotEvent.fever => '「ず」「ん」「だ」を目押しするのだ！！',
+          SlotEvent.result => 'リザルトなのだ',
           SlotEvent.smallBonus => 'そろったのだ！',
           SlotEvent.bigBonus => 'ずんだもんなのだ！！！',
         };

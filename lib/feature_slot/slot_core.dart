@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/feature_slot/fever_mode_manager.dart';
 import 'package:app/feature_slot/reel_component.dart';
 import 'package:app/feature_slot/slot_component.dart';
 import 'package:app/feature_slot/slot_manager.dart';
@@ -21,6 +22,8 @@ enum SlotEvent {
   smallBonus,
   bigBonus,
   zunda,
+  fever,
+  result,
 }
 
 class SlotGame extends FlameGame
@@ -38,6 +41,7 @@ class SlotGame extends FlameGame
   int _index = 0;
   final slotManager = SlotManager();
   final zundaManager = ZundamochiModeManager();
+  final feverManager = FeverModeManager();
 
   @override
   KeyEventResult onKeyEvent(
@@ -91,13 +95,25 @@ class SlotGame extends FlameGame
     ]);
 
     slot = SlotComponent([
-      ReelComponent(SlotSymbol.first, symbolSize),
-      ReelComponent(SlotSymbol.second, symbolSize),
-      ReelComponent(SlotSymbol.third, symbolSize),
+      ReelComponent(
+        SlotSymbol.first,
+        symbolSize,
+        (symbols) => slot.isHitSymbol(SlotPos.left, symbols),
+      ),
+      ReelComponent(
+        SlotSymbol.second,
+        symbolSize,
+        (symbols) => slot.isHitSymbol(SlotPos.center, symbols),
+      ),
+      ReelComponent(
+        SlotSymbol.third,
+        symbolSize,
+        (symbols) => slot.isHitSymbol(SlotPos.right, symbols),
+      ),
     ])
       ..position = canvasSize * .5;
 
-    await addAll([slot, slotManager, zundaManager]);
+    await addAll([slot, slotManager, zundaManager, feverManager]);
   }
 
   @override
