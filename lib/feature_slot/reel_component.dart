@@ -59,18 +59,15 @@ class ReelComponent extends PositionComponent
     });
   }
 
-  SequenceEffect get hitEffect => SequenceEffect([
-        ColorEffect(
-          const Color(0xFFFFFFFF),
-          const Offset(0.0, 0.5),
-          EffectController(duration: 1, curve: Curves.bounceOut),
+  Effect get hitEffect => ColorEffect(
+        const Color(0xFFFFFFFF),
+        const Offset(0.0, 0.5),
+        EffectController(
+          duration: 1,
+          curve: Curves.easeOutExpo,
+          reverseDuration: .5,
         ),
-        ColorEffect(
-          const Color(0xFFFFFFFF),
-          const Offset(0.5, 0),
-          EffectController(duration: 0.1, startDelay: 1),
-        ),
-      ]);
+      );
 
   int get length => _symbols.length;
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
@@ -82,7 +79,7 @@ class ReelComponent extends PositionComponent
   void hit(int pos) {
     final hitIndex = (pos - 1 + stopIndex + _reel.length) % _reel.length;
 
-    // _reel[hitIndex].sprite.add(hitEffect);
+    _reel[hitIndex].sprite.add(hitEffect);
   }
 
   @override
