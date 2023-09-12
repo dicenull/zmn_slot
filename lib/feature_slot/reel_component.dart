@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
@@ -24,6 +26,7 @@ class ReelComponent extends PositionComponent
   int stopIndex = -1;
   final speed = 1000;
 
+  var reelClipRange = Rect.zero;
   bool isStopReady = false;
 
   double reelPosition = 0;
@@ -64,6 +67,18 @@ class ReelComponent extends PositionComponent
     });
   }
 
+  @override
+  FutureOr<void> onLoad() {
+    reelClipRange = Rect.fromCenter(
+      center: reelCenter.toOffset() - margin,
+      width: symbolSize,
+      height: visibleReelHeight,
+    );
+
+    final shadowComponent = _ShadowComponent(reelClipRange);
+    add(shadowComponent);
+  }
+
   Effect get hitEffect => ColorEffect(
         const Color(0xFFFFFFFF),
         const Offset(0.0, 0.5),
@@ -74,9 +89,10 @@ class ReelComponent extends PositionComponent
         ),
       );
 
+  Offset get margin => Offset(0, symbolSize * .5);
   int get length => _symbols.length;
   Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
-  double get visibleReelHeight => symbolSize * 3;
+  double get visibleReelHeight => symbolSize * 4;
 
   double calcDrawHeight(int y) =>
       (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
@@ -89,21 +105,16 @@ class ReelComponent extends PositionComponent
 
   @override
   void render(Canvas canvas) {
-    final reelRange = Rect.fromCenter(
-      center: reelCenter.toOffset(),
-      width: symbolSize,
-      height: visibleReelHeight,
-    );
     final bgColor = BasicPalette.white.withAlpha(100);
     final borderColor = BasicPalette.white.paint()
       ..style = PaintingStyle.stroke;
 
     if (!isDebug) {
-      canvas.clipRect(reelRange);
+      canvas.clipRect(reelClipRange);
     }
 
-    canvas.drawRect(reelRange, bgColor.paint());
-    canvas.drawRect(reelRange, borderColor);
+    canvas.drawRect(reelClipRange, bgColor.paint());
+    canvas.drawRect(reelClipRange, borderColor);
 
     if (isDebug) {
       _reel.asMap().forEach((y, state) {
@@ -247,4 +258,35 @@ class _SymbolState {
   final SlotSymbol symbol;
 
   _SymbolState({required this.sprite, required this.symbol});
+}
+
+class _ShadowComponent extends PositionComponent {
+  final Rect clipRange;
+  late final Shader shader;
+
+  _ShadowComponent(this.clipRange);
+
+  @override
+  FutureOr<void> onLoad() {
+    shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: [
+          0,
+          .1,
+          .9,
+          1.0
+        ],
+        colors: [
+          Colors.black,
+          Color.fromRGBO(0, 0, 0, 0),
+          Color.fromRGBO(0, 0, 0, 0),
+          Colors.black,
+        ]).createShader(clipRange);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    canvas.drawRect(clipRange, Paint()..shader = shader);
+  }
 }
