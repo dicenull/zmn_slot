@@ -177,6 +177,15 @@ class SlotComponent extends PositionComponent with HasGameRef<SlotGame> {
             }
           }
         },
+      SlotPhase.hiyoko => () {
+          _hitSymbol = SlotSymbol.bell;
+        },
+      SlotPhase.replay => () {
+          _hitSymbol = SlotSymbol.replay;
+        },
+      SlotPhase.plum => () {
+          _hitSymbol = SlotSymbol.plum;
+        },
       _ => () {
           rollStream.add(SlotEvent.roll);
         },

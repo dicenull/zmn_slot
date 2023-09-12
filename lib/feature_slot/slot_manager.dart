@@ -37,7 +37,8 @@ class SlotManager extends Component with HasGameRef<SlotGame> {
   }
 
   _normalRaffle() {
-    final val = math.Random().nextInt(216);
+    final rnd = math.Random();
+    final val = rnd.nextInt(216);
 
     phase.value = switch (val) {
       // 4: 5/216=2.3%でずんだもちモード
@@ -49,6 +50,14 @@ class SlotManager extends Component with HasGameRef<SlotGame> {
           }
 
           return SlotPhase.zunda;
+        },
+      (<= 8) => () {
+          final r = rnd.nextInt(3);
+
+          if (r == 0) return SlotPhase.hiyoko;
+          if (r == 1) return SlotPhase.replay;
+
+          return SlotPhase.plum;
         },
       _ => () {
           return SlotPhase.miss;
