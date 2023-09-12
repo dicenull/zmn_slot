@@ -4,6 +4,7 @@ import 'package:app/feature_slot/slot_core.dart';
 import 'package:app/feature_slot/slot_symbol.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -37,6 +38,8 @@ class ReelComponent extends PositionComponent
   (SlotSymbol, ReelPos)? _suberi;
   SlotSymbol? _meoshi;
 
+  final visibleCount = 4;
+
   ReelComponent(this._symbols, this.symbolSize, this.onHit)
       : _reel = <_SymbolState>[],
         reelHeight = symbolSize * _symbols.length {
@@ -67,18 +70,6 @@ class ReelComponent extends PositionComponent
     });
   }
 
-  @override
-  FutureOr<void> onLoad() {
-    reelClipRange = Rect.fromCenter(
-      center: reelCenter.toOffset() - margin,
-      width: symbolSize,
-      height: visibleReelHeight,
-    );
-
-    final shadowComponent = _ShadowComponent(reelClipRange);
-    add(shadowComponent);
-  }
-
   Effect get hitEffect => ColorEffect(
         const Color(0xFFFFFFFF),
         const Offset(0.0, 0.5),
@@ -89,11 +80,14 @@ class ReelComponent extends PositionComponent
         ),
       );
 
-  Offset get margin => Offset(0, symbolSize * .5);
   int get length => _symbols.length;
-  Vector2 get reelCenter => Vector2(symbolSize, visibleReelHeight) * .5;
-  double get visibleReelHeight => symbolSize * 4;
 
+  Offset get margin => (_reel.length % 2 != visibleCount % 2)
+      ? Offset.zero
+      : Offset(0, symbolSize * .5);
+  Vector2 get reelCenter =>
+      Vector2(symbolSize, visibleReelHeight) * .5 - margin.toVector2();
+  double get visibleReelHeight => symbolSize * visibleCount;
   double calcDrawHeight(int y) =>
       (symbolSize * y + reelPosition) % reelHeight - reelHeight * .5;
 
@@ -101,6 +95,18 @@ class ReelComponent extends PositionComponent
     final hitIndex = (pos - 1 + stopIndex + _reel.length) % _reel.length;
 
     _reel[hitIndex].sprite.add(hitEffect);
+  }
+
+  @override
+  FutureOr<void> onLoad() {
+    reelClipRange = Rect.fromCenter(
+      center: reelCenter.toOffset(),
+      width: symbolSize,
+      height: visibleReelHeight,
+    );
+
+    final shadowComponent = _ShadowComponent(reelClipRange);
+    add(shadowComponent);
   }
 
   @override
@@ -124,12 +130,12 @@ class ReelComponent extends PositionComponent
             Rect.fromPoints(p.toOffset(), Offset(symbolSize, symbolSize)),
             BasicPalette.green.paint()..style = PaintingStyle.stroke);
       });
-      canvas.drawCircle(reelCenter.toOffset(), 5, bgColor.paint());
+      canvas.drawCircle(reelCenter.toOffset(), 20, bgColor.paint());
 
       final centerIndex = _calcCenterIndex();
       final symbolCenterHeight = calcDrawHeight(centerIndex) + symbolSize * .5;
 
-      canvas.drawCircle(Offset(0, symbolCenterHeight), 10, bgColor.paint());
+      canvas.drawCircle(Offset(0, symbolCenterHeight), 5, bgColor.paint());
     }
   }
 
@@ -160,7 +166,7 @@ class ReelComponent extends PositionComponent
         final diff = reelCenter.y - symbolCenterHeight;
         final (t, c, b) = _indexList(centerIndex);
 
-        if (diff.abs() < amount) {
+        if (diff.abs() <= amount * 1.5) {
           final suberi = _suberi;
           if (suberi != null) {
             final (symbol, pos) = suberi;
@@ -253,13 +259,6 @@ class ReelComponent extends PositionComponent
 
 enum ReelPos { top, center, bottom }
 
-class _SymbolState {
-  final SpriteComponent sprite;
-  final SlotSymbol symbol;
-
-  _SymbolState({required this.sprite, required this.symbol});
-}
-
 class _ShadowComponent extends PositionComponent {
   final Rect clipRange;
   late final Shader shader;
@@ -289,4 +288,11 @@ class _ShadowComponent extends PositionComponent {
   void render(Canvas canvas) {
     canvas.drawRect(clipRange, Paint()..shader = shader);
   }
+}
+
+class _SymbolState {
+  final SpriteComponent sprite;
+  final SlotSymbol symbol;
+
+  _SymbolState({required this.sprite, required this.symbol});
 }
